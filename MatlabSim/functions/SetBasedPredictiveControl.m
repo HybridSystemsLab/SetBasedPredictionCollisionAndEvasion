@@ -1,110 +1,7 @@
-%                              %
-% set based predictive control %
-%                              %
-
-clc;clear all;close all
-
-% initial conditions
-
-% collision at end of one trajectory
-%p_0 = [3.5, 4.4, 2.0, -3.0, -2.0, 4.0];
-%x_0 = [0.0, 0.0, 0.0];
-
-
-% 
-p_0 = [1.0, 0.5, 0.5, -1.0, 0.0, 1.5];
-x_0 = [0.0, 0.0, 0.0];
-target = [-2.0, -2.0, 0.0];
-
-
-state = [p_0, x_0];
-mpc(state, target)
-
-
-
-% returns convex hull from point cloud
-function obj = makeObj(points)
-    %figure()
-    % create face representation and create convex hull
-    F = convhull(points(:,1), points(:,2), points(:,3));
-    S.Vertices = points;
-    S.Faces = F;
-    S.FaceVertexCData = jet(size(points,1));
-    S.FaceColor = 'interp';
-    obj = patch(S);
-
-end
-
-
-% creates a point cloud in a sphere around the center
-function points = CreateSphere(center, r, thetadis, phidis)
-
-	% angle discretization
-	thetas = linspace(0,2*pi,thetadis);
-	phis = linspace(0,pi,phidis);
-    
-	% point calculation
-	points = [];
-    x = [];
-    y = [];
-    z = [];
-	for i = 1:length(phis)
-		for j = 1:length(thetas)
-            
-            % removes duplicate point at theta = 2*pi
-            if(thetas(j) == 2*pi)
-                break
-            end
-                
-            x = (r * sin(phis(i)) * cos(thetas(j))) + center(1);
-			y = (r * sin(phis(i)) * sin(thetas(j))) + center(2);
-			z = (r * cos(phis(i))) + center(3);
-
-            points = [points; x, y, z];
-            
-            % removes duplicate points at the top and bottom of sphere
-			if(phis(i) == 0 || phis(i) == pi)
-				break
-            end
-        end
-    end   
-end
-
-
-function trajectory = ProjectilePredict(p_0, simTime)
-
-    % set up simulink
-    set_param('projectile/rx','Value',num2str(p_0(1)));
-    set_param('projectile/ry','Value',num2str(p_0(2)));
-    set_param('projectile/rz','Value',num2str(p_0(3)));
-    set_param('projectile/vx','Value',num2str(p_0(4)));
-    set_param('projectile/vy','Value',num2str(p_0(5)));
-    set_param('projectile/vz','Value',num2str(p_0(6)));
-    
-    set_param('projectile', 'StopTime', num2str(simTime));
-
-    % run simulation
-    sim('projectile');
-    
-    trajectory = projectilePos;
-    
-end
-
-
-function totalCost = CostSum(trajectory, target, N)
-    
-    totalCost = 0;
-    
-    % sum distances between each point in trajectory and target
-    for i = 1:N
-        cost = pdist([trajectory(i,:); target], 'euclidean');
-        totalCost = totalCost + cost;
-    end
-end
 
 % prediction algorithm
 % state - [x, y, z, px, py, pz, pxdot, pydot, pzdot]
-function input = mpc(state, target)
+function input = SetBasedPredictiveControl(state, target)
 
     % set based prediction constants
     % R - radius
@@ -203,7 +100,7 @@ function input = mpc(state, target)
 
         % create intersample convex hull for projectile
         projintersampleSet = [projset1; projset2];
-        projectileConvexHull = makeObj(projintersampleSet);
+        projectileConvexHull = MakeObj(projintersampleSet);
         
 
         % check which trajectories are safe
@@ -222,7 +119,7 @@ function input = mpc(state, target)
 
                 % create intersample convex hull for trajectory k for quadrotor
                 quadIntersampleSet = [quadset1; quadset2];
-                quadrotorConvexHull = makeObj(quadIntersampleSet);
+                quadrotorConvexHull = MakeObj(quadIntersampleSet);
 
                 % run collision detection algorithm
                 collisionFlag = GJK(projectileConvexHull, quadrotorConvexHull, iterationsAllowed);
