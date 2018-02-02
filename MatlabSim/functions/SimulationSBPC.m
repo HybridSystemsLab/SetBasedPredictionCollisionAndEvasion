@@ -1,26 +1,12 @@
 
 % prediction algorithm
 % state - [x, y, z, px, py, pz, pxdot, pydot, pzdot]
-function input = SetBasedPredictiveControl(state, target)
-
-    % set based prediction constants
-    % R - radius
-    % TDIS - theta discretization param (n-1)
-    % PDIS - phi discretixation param (n-1)
-    R = 0.1;
-    TDIS = 5;
-    PDIS = 5;
+function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
     
     % number of iterations to allow for collision detection.
     iterationsAllowed = 6;
-
-    % mpc contants
-    % N - prediction horizon
-    % K - discretization parameter
-    N = 25;
-    K = 9;
-    TIMESTEP = 0.05; % sec
-    VELOCITY = logspace(0,log10(6),5)-1; % m/s
+    
+    % get possible velocities
     S = length(VELOCITY);
     
     %% projectile set based prediction
@@ -30,12 +16,12 @@ function input = SetBasedPredictiveControl(state, target)
     velcntr = state(7:9);
     
     % create point cloud from initial condition 
-    s_0 = CreateSphere(projcntr, R, TDIS, PDIS);    % position
-    v_0 = CreateSphere(velcntr, R, TDIS, PDIS);     % velocity
+    s_0 = CreateSphere(projcntr, PR, TDIS, PDIS);    % position
+    v_0 = CreateSphere(velcntr, PR, TDIS, PDIS);     % velocity
     
     % middle point with simulink
     simLength = double(N*TIMESTEP);
-    projtraj = ProjectilePredict(state(4:9), simLength);
+    [projtraj, projvel] = SimulationProjectilePredict(state(4:9), simLength);
     
     % set points
     [m,n] = size(s_0);
@@ -45,7 +31,7 @@ function input = SetBasedPredictiveControl(state, target)
         setState = [s_0(i,:), v_0(i,:)];
         
         % predict trajectory
-        projtraj(:,:,i+1) = ProjectilePredict(setState, simLength);
+        [projtraj(:,:,i+1), projvel(:,:,i+1)] = SimulationProjectilePredict(setState, simLength);
         
     end
    
@@ -55,7 +41,7 @@ function input = SetBasedPredictiveControl(state, target)
     % get initial coordinates of quad
     quadcntr = state(1:3);
     % create point cloud from initial condition
-    s_1 = CreateSphere(quadcntr, R, TDIS, PDIS);
+    s_1 = CreateSphere(quadcntr, QR, TDIS, PDIS);
     [m,n] = size(s_1);
     
     % N+1 because of initial condition
@@ -105,7 +91,7 @@ function input = SetBasedPredictiveControl(state, target)
 
         % create intersample convex hull for projectile
         projintersampleSet = [projset1; projset2];
-        projectileConvexHull = MakeObj(projintersampleSet);
+        projectileConvexHull = SimulationMakeObj(projintersampleSet);
         
 
         % check which trajectories are safe
@@ -127,7 +113,7 @@ function input = SetBasedPredictiveControl(state, target)
                     
                     % create intersample convex hull for trajectory k for quadrotor
                     quadIntersampleSet = [quadset1; quadset2];
-                    quadrotorConvexHull = MakeObj(quadIntersampleSet);
+                    quadrotorConvexHull = SimulationMakeObj(quadIntersampleSet);
 
                     % run collision detection algorithm
                     collisionFlag = GJK(projectileConvexHull, quadrotorConvexHull, iterationsAllowed);
@@ -167,7 +153,7 @@ function input = SetBasedPredictiveControl(state, target)
     minCostSIndex = minCostIndexList(minCostKIndex);
     
     u_opt = setquadtraj(2,:,minCostSIndex,minCostKIndex,1);
-    input = u_opt;
+    input = [u_opt,projtraj(2,:,1), projvel(2,:,1)];
     
     xlabel('x axis');
     ylabel('y axis');

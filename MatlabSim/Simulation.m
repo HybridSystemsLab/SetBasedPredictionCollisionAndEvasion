@@ -12,15 +12,34 @@ x_0 = [0.0, 0.0, 0.0];
 target = [1.0, 1.0, 0.0];
 state = [x_0, p_0];
 
-%SetBasedPredictiveControl(state, target);
+% set based prediction constants
+% R - radius
+% TDIS - theta discretization param (n-1)
+% PDIS - phi discretixation param (n-1)
+QR = 0.1;
+PR = 0.15;
+TDIS = 5;
+PDIS = 5;
+
+
+% mpc contants
+% N - prediction horizon
+% K - discretization parameter
+N = 10;
+K = 17;
+TIMESTEP = 0.05; % sec
+VELOCITY = logspace(0,log10(2),5)-1; % m/s
+
+%SBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
+
 
 
 newState(1,:) = state;
 
-iterations = 35;
+iterations = 20;
 for i = 1:iterations
     
-    newState(i+1,:) = SimulationSetBasedPredictiveControl(state, target);
+    newState(i+1,:) = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
     
     state = newState(i+1,:);
 
@@ -61,6 +80,7 @@ ylim([0.0 2.0]);
 xlim([0.0 2.0]);
 title('Distance Between Quadrotor and Target');
 grid on
+
 
 
 
