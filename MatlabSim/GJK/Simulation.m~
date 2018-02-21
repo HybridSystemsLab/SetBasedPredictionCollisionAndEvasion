@@ -6,44 +6,73 @@ clc;clear all;close all
 
 
 % Early collision examples
+% p_0 = [1.0, 0.5, 0.5, -1.2, -0.2, 1.5];
+% x_0 = [0.0, 0.0, 0.0];
+% target = [1.0, 1.0, 0.0];
+% state = [x_0, p_0];
 
-p_0 = [1.0, 0.5, 0.5, -1.2, -0.2, 1.5];
-x_0 = [0.0, 0.0, 0.0];
-target = [1.0, 1.0, 0.0];
+% Late collision example
+% p_0 = [1.1, 0.56, 0.5, -0.62, 0.8, 1.9];
+% x_0 = [0.68, 0.72, 0.5];
+% target = [1.0, 1.0, 0.5];
+% state = [x_0, p_0];
+
+% Paper example
+p_0 = [1.1, 0.56, 0.5, -0.62, 0.8, 2.9];
+x_0 = [0.45, 0.39, 0.5];
+target = [1.0, 1.0, 0.5];
 state = [x_0, p_0];
 
 % set based prediction constants
-% R - radius
+% QR - quad radius
+% PR - projectile radius
 % TDIS - theta discretization param (n-1)
 % PDIS - phi discretixation param (n-1)
+%{
 QR = 0.1;
 PR = 0.15;
 TDIS = 5;
 PDIS = 5;
+%}
+
+% algorithm visualization
+
+QR = 0.01;
+PR = 0.05;
+TDIS = 9;
+PDIS = 9;
+
+
 
 
 % mpc contants
 % N - prediction horizon
 % K - discretization parameter
-N = 10;
-K = 17;
+
+%N = 10;
+%K = 17;
+
+% algorithm visualization
+%N = 10;
+%K = 17;
+
 TIMESTEP = 0.05; % sec
 VELOCITY = logspace(0,log10(2),5)-1; % m/s
 
-%SBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
+SBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
 
 
-
+%{
 newState(1,:) = state;
 
-iterations = 20;
+iterations = 25;
 for i = 1:iterations
     
     newState(i+1,:) = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
     
     state = newState(i+1,:);
 
-    disp(i)
+    fprintf('Simulation is %d%% complete\n', double(i/iterations)*100);
 end
 
 
@@ -82,5 +111,4 @@ title('Distance Between Quadrotor and Target');
 grid on
 
 
-
-
+%}
