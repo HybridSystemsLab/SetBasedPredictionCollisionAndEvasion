@@ -91,7 +91,7 @@ function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCI
 
         % create intersample convex hull for projectile
         projintersampleSet = [projset1; projset2];
-        projectileConvexHull = SimulationMakeObj(projintersampleSet, 'none');
+        projectileConvexHull = SimulationMakeObj(projintersampleSet);
         
         % check which trajectories are safe
         
@@ -111,7 +111,7 @@ function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCI
                     
                     % create intersample convex hull for trajectory k for quadrotor
                     quadIntersampleSet = [quadset1; quadset2];
-                    quadrotorConvexHull = SimulationMakeObj(quadIntersampleSet, 'none');
+                    quadrotorConvexHull = SimulationMakeObj(quadIntersampleSet);
 
                     % run collision detection algorithm
                     collisionFlag = GJK(projectileConvexHull, quadrotorConvexHull, iterationsAllowed);

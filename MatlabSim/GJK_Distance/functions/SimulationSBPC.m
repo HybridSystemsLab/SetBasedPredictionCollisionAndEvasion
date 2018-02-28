@@ -1,6 +1,6 @@
 % prediction algorithm
 % state - [x, y, z, px, py, pz, pxdot, pydot, pzdot]
-function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
+function input = SimulationSBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
 
     % number of iterations to allow for collision detection.
     iterationsAllowed = 6;
@@ -121,7 +121,7 @@ function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCI
                 %collisionFlag = GJK(projectileConvexHull(i), quadrotorConvexHull, iterationsAllowed);
                 [dist,~,~,~]=GJK_dist(projectileConvexHull(i),quadrotorConvexHull);
                 
-                if(dist < 0.1)
+                if(dist < sigma)
                     %fprintf('Collision in trajectory %d  at speed %d at time step %d\n\r', k,VELOCITY(s),i);
                     safeTraj(s,k) = 0;
                     trajCost(s,k) = inf;
@@ -129,8 +129,11 @@ function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCI
                 else
                     [cost,~,~,~] = GJK_dist(targetObj,quadrotorConvexHull);
                     collisionFlag = GJK(targetObj,quadrotorConvexHull,iterationsAllowed);
-                    if(collisionFlag) 
+                    if(cost < 0.05) 
                         cost = 0;
+                    elseif(cost > 0.05 && collisionFlag)
+                        cost
+                        error('must increase minimum cost');
                     end
                     trajCost(s,k) = trajCost(s,k) + cost;
                 end
@@ -141,7 +144,7 @@ function input = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCI
     
     
     %% find optimal input
-    trajCost
+    %trajCost
     
     % find minimum cost and return first coordinate in that trajectory
     [minCostList, minCostIndexList] = min(trajCost);

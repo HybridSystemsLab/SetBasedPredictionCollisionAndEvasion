@@ -1,7 +1,7 @@
 
 % prediction algorithm
 % state - [x, y, z, px, py, pz, pxdot, pydot, pzdot]
-function input = SBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
+function input = SBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
 
     % number of iterations to allow for collision detection.
     iterationsAllowed = 6;
@@ -122,13 +122,14 @@ function input = SBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
                 %collisionFlag = GJK(projectileConvexHull(i), quadrotorConvexHull, iterationsAllowed);
                 [dist,~,~,~]=GJK_dist(projectileConvexHull(i),quadrotorConvexHull);
                 
-                if(dist < 0.1)
+                if(dist < sigma)
                     fprintf('Collision in trajectory %d  at speed %d at time step %d\n\r', k,VELOCITY(s),i);
                     safeTraj(s,k) = 0;
                     trajCost(s,k) = inf;
                     break;
                 else
                     [cost,~,~,~] = GJK_dist(targetObj,quadrotorConvexHull);
+                    collisionFlag = GJK(targetObj,quadrotorConvexHull,iterationsAllowed);
                     if(cost < 0.1) 
                         cost = 0;
                     elseif(cost > 0.1 && collisionFlag)
