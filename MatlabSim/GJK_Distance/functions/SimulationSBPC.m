@@ -3,7 +3,7 @@
 function input = SimulationSBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
 
     % number of iterations to allow for collision detection.
-    iterationsAllowed = 6;
+    iterationsAllowed = 3;
     
     % target object
     targetSet = CreateSphere(target, 0.001, 5, 5);
@@ -129,10 +129,10 @@ function input = SimulationSBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,
                 else
                     [cost,~,~,~] = GJK_dist(targetObj,quadrotorConvexHull);
                     collisionFlag = GJK(targetObj,quadrotorConvexHull,iterationsAllowed);
-                    if(cost < 0.05) 
-                        cost = 0;
-                    elseif(cost > 0.05 && collisionFlag)
+                    
+                    if(collisionFlag)
                         cost
+                        cost = 0;
                         error('must increase minimum cost');
                     end
                     trajCost(s,k) = trajCost(s,k) + cost;
@@ -144,7 +144,7 @@ function input = SimulationSBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,
     
     
     %% find optimal input
-    %trajCost
+   
     
     % find minimum cost and return first coordinate in that trajectory
     [minCostList, minCostIndexList] = min(trajCost);

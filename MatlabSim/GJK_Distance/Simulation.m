@@ -71,6 +71,7 @@ K = 17;
 
 TIMESTEP = 0.05; % sec
 VELOCITY = logspace(0,log10(2),10)-1; % m/s
+sigma = 0.1;
 %TIMESTEP = 0.1; % sec
 %VELOCITY = logspace(0,log10(2),2)-1; % m/s
 
@@ -82,8 +83,7 @@ newState(1,:) = state;
 
 iterations = 30;
 for i = 1:iterations
-    
-    newState(i+1,:) = SimulationSBPC(state,target,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
+    newState(i+1,:) = SimulationSBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY);
     
     state = newState(i+1,:);
 

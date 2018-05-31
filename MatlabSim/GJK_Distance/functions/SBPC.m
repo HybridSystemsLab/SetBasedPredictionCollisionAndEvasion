@@ -130,10 +130,10 @@ function input = SBPC(state,target,sigma,QR,PR,TDIS,PDIS,N,K,TIMESTEP,VELOCITY)
                 else
                     [cost,~,~,~] = GJK_dist(targetObj,quadrotorConvexHull);
                     collisionFlag = GJK(targetObj,quadrotorConvexHull,iterationsAllowed);
-                    if(cost < 0.1) 
-                        cost = 0;
-                    elseif(cost > 0.1 && collisionFlag)
+                    
+                    if(collisionFlag)
                         cost
+                        cost = 0;
                         error('must increase minimum cost');
                     end
                     trajCost(s,k) = trajCost(s,k) + cost;
