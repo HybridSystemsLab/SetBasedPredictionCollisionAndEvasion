@@ -1,19 +1,22 @@
+% [c,ceq] = ObstConstraint(x0, u, ts, xObst, threshold)
+%
+% defines the non linear constraint - maintain a distance above threshold
+% from the obstacle position
 
+function [c,ceq] = ObstConstraint(x0, u, ts, xObst, threshold)
 
-function [c,ceq] = ProjConstraint(x0, u, ts, xProj, threshold)
-
+    % predict agent
     x = SingleIntegrator(x0, u, ts);
     
+    % calculate distance between agent and obstacle
     [m,n] = size(x);
-    
-    projDist = zeros(1,n);
+    ObstDist = zeros(1,n);
     for i = 1:n
-        projDist(i) = norm(x(:,i)-xProj(:,i));
+        ObstDist(i) = norm(x(:,i)-xObst(:,i));
     end
     
-        
-    c = projDist-threshold;
+	% define constraints
+    c = -ObstDist+threshold;
     ceq = [];
     
-
 end
