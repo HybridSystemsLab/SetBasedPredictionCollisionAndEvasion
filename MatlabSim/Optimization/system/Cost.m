@@ -1,4 +1,6 @@
 % function c = Cost(x0, u, ts, target)
+%
+% custom cost function - distance to target squared
 
 function c = Cost(x0, u, ts, target)
     
@@ -7,11 +9,8 @@ function c = Cost(x0, u, ts, target)
    
     % calculate cost of prediction
     [m,n] = size(x);
-    c = 0;
-    for i = 1:n
-        c = c + norm(x(:,i)-target);
-    end
     
-    
+    c = norm(x-target*ones(1,n))^2  
+     
 end
 

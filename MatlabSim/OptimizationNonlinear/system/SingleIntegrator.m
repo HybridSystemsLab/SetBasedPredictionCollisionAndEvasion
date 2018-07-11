@@ -1,16 +1,17 @@
 % function x = SingleIntegrator(x0, u, ts)
+%
+% dynamics of single integrator
 
 function x = SingleIntegrator(x0, u, ts)
 
     [m,n] = size(u);
     
-    x = zeros(2,n+1);
-    x(1,1) = x0(1);
-    x(2,1) = x0(2);
+    x = zeros(3,n+1);
+    x(:,1) = x0;
+    
     
     % apply integrator dynamics
     for i = 1:n
-        x(1,i+1) = x(1,i) + ts*u(1,i);
-        x(2,i+1) = x(2,i) + ts*u(2,i);
+        x(:,i+1) = x(:,i) + ts*u(:,i);
     end
 end

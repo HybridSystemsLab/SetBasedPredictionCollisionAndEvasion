@@ -1,10 +1,15 @@
+close all;
+clc;
+clear;
+
+%% Finds minimum distance between polytopes X1 and X2
 
 % Declare vertice sets
-X1 = [0.0 0.0 1.0 1.0 1.5;
-      0.0 1.0 0.0 1.0 0.5];
+X1 = [0.0 0.0 1.0 1.0;
+      0.0 1.0 0.0 1.0];
   
-X2 = [2.0 3.0 2.0 3.0;
-      0.0 0.0 1.0 1.0];
+X2 = [2.0 3.0 2.0 3.0 1.1;
+      0.0 0.0 1.0 1.0 1.0];
 
 % Evaluate min distance
 minDist = PolytopeMinDist(X2,X1);

@@ -1,3 +1,6 @@
+% minDist = PolytopeMinDist(X1,X2)
+%
+% finds the minimum distance between two polytopes X1 and X2
 
 function minDist = PolytopeMinDist(X1,X2)
     
