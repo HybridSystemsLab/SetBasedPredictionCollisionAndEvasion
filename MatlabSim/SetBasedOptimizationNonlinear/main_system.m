@@ -5,11 +5,15 @@ clear;
 %% find the next optimal input given a initial conditions and target coordinates
 
 x0 = [0;0;0];     % initial coordinates
-N = 10;         % prediction horizon
+N = 3;         % prediction horizon
 ts = 0.05;      % sampling time
 target = [-1;-1;-1]; % target coordinates
-xObst = -0.5*ones(3,N+1);
-threshold = 0.4;
+xObst = -0.3*ones(3,N+1);
+threshold = 0.1;
+
+x0_set = CreateSphere(x0,0.1,3,3);
+
+
 
 % projectile
 %p0 = [-0.1;-0.1;0.15;0;0;0];
@@ -18,22 +22,6 @@ threshold = 0.4;
 %xObst = transpose(projPos);
 %xdotObst = transpose(projVel);
 
-iterations = 20;
-agentPos = zeros(3,iterations);
-for i = 1:iterations
-    
-    % find
-    uopt = FindOptimalInput(x0, N, ts, target, xObst, threshold);
-    
-    
-    nextState = SingleIntegrator(x0,uopt,ts);
-    x0 = nextState(:,end);
-    agentPos(:,i) = x0;
 
-end
-
-
-scatter3(agentPos(1,:), agentPos(2,:), agentPos(3,:))
-
-
+uopt = FindOptimalInput(x0_set, N, ts, target, xObst, threshold)
 

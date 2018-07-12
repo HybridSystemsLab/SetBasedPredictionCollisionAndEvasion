@@ -3,7 +3,7 @@
 % uses fmincon to minimize cost function given system dynamics and
 % nonlinear constraints
 
-function u0 = FindOptimalInput(x0, N, ts, target, xObst, threshold)
+function u0 = FindOptimalInput(x0_set, N, ts, target, xObst, threshold)
  
     A = [];
     b = [];
@@ -17,7 +17,7 @@ function u0 = FindOptimalInput(x0, N, ts, target, xObst, threshold)
     uInit = ones(3,N);
 
     % solve optimization
-    uopt = fmincon(@(u) Cost(x0,u,ts,target),uInit,A,b,Aeq,beq,lb,ub, @(u) ObstConstraint(x0,u,ts,xObst,threshold));
+    uopt = fmincon(@(u) Cost(x0_set,u,ts,target),uInit,A,b,Aeq,beq,lb,ub, @(u) ObstConstraint(x0_set,u,ts,xObst,threshold));
 
     % return first input
 	u0 = uopt(:,1); 
