@@ -25,16 +25,19 @@ function minDist = PolytopeMinDist(X1,X2)
            zeros(1,n1) ones(1,n2)];
 	beq = [1;1];
     
+    nonlcon = [];
     
     % create lambda vectors
     x0 = zeros(n,1);
     x0(1) = 1;
     x0(n1+1) = 1;
+
     
     fun = @(lambda)(norm((X1 * lambda(1:n1))-(X2 * lambda(n1+1:n)))^2);
     
     % evaluate fmincon
-    x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub);
+    options = optimoptions('fmincon','Display','notify-detailed');
+    x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options);
     
     % return min distance
     minDist = sqrt(fun(x));

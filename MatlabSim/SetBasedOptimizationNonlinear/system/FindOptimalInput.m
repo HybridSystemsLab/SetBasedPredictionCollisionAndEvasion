@@ -1,7 +1,7 @@
 % function u0 = FindOptimalInput(x0, N, ts, target)
 %
 % uses fmincon to minimize cost function given system dynamics and
-% nonlinear constraints
+% nonlinear constraints, returns optimal input sequence
 
 function u0 = FindOptimalInput(x0_set, N, ts, target, xObst, threshold)
  
@@ -11,14 +11,17 @@ function u0 = FindOptimalInput(x0_set, N, ts, target, xObst, threshold)
     beq = [];
     
     % set lower and upper bounds on inputs to integrator
-    lb = -1*ones(3,N);
-    ub = ones(3,N);
+    bound = 0.1;
+    lb = -bound*ones(3,N);
+    ub = bound*ones(3,N);
     
-    uInit = ones(3,N);
+    uInit = zeros(3,N);
 
     % solve optimization
-    uopt = fmincon(@(u) Cost(x0_set,u,ts,target),uInit,A,b,Aeq,beq,lb,ub, @(u) ObstConstraint(x0_set,u,ts,xObst,threshold));
+    options = optimoptions('fmincon','Display','notify-detailed','algorithm','sqp','MaxFunEvals',1000);
+    
+    uopt = fmincon(@(u) Cost(x0_set,u,ts,target),uInit,A,b,Aeq,beq,lb,ub, @(u) ObstConstraint(x0_set,u,ts,xObst,threshold),options);
 
-    % return first input
-	u0 = uopt(:,1); 
+    % return optimal input sequence
+    u0 = uopt; 
 end

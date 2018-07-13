@@ -22,8 +22,7 @@ function [c,ceq] = ObstConstraint(x0_set, u, ts, xObst, threshold)
         % calculate distance between agent and obstacle
         % xPolytope is a 3xp matrix
         % xObst(:,i) is a 3x1 matrix
-        
-        ObstDist(i) = PolytopeMinDist(xPolytope,xObst(:,i));
+        ObstDist(i) = PolytopeMinDist(xPolytope,xObst(:,1:2));
     end
     
 	% define constraints
