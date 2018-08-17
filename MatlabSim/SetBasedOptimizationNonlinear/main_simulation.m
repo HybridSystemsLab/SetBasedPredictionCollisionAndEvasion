@@ -6,9 +6,9 @@ clear;
 x0 = [0;0;0];               % initial coordinates
 N = 3;                      % prediction horizon
 ts = 0.05;                  % sampling time
-target = [-0.25;-0.25;-0.25];  % target coordinates
-xObst = -0.13*ones(3,N+1);  % obstacle coordinate - stationary
-xObst(1,:) = -0.25*ones(1,N+1);
+target = [-0.2;-0.2;-0.2];  % target coordinates
+xObst = -0.09*ones(3,N+1);  % obstacle coordinate - stationary
+xObst(1,:) = -0.12*ones(1,N+1);
 threshold = 0.1;          % threshold distance value
 
 
