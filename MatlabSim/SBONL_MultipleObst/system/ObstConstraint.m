@@ -5,7 +5,10 @@
 
 function [c,ceq] = ObstConstraint(x0_set, u, ts, xObst, threshold)
 
+    
+
     % predict agent with set based dynamics
+    % coords X time X set points
     x_set = SingleIntegrator(x0_set, u, ts);
     
     % find distance between agent polytope and obstacle
@@ -22,7 +25,7 @@ function [c,ceq] = ObstConstraint(x0_set, u, ts, xObst, threshold)
             for k = 1:pA
                 xPolytope(:,k) = x_set(:,i,k);
             end
-
+            
             % calculate distance between agent and obstacle
             % xPolytope is a 3xp matrix
             % xObst(:,i,j) is a 3x1 matrix
@@ -31,7 +34,6 @@ function [c,ceq] = ObstConstraint(x0_set, u, ts, xObst, threshold)
             obstDistCount = obstDistCount+1;
         end
     end
-    
 	% define constraints
     c = -ObstDist+threshold;
     ceq = [];

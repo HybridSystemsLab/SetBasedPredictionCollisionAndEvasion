@@ -17,7 +17,7 @@ function PlotSimDistance(agentPos, obst, threshold, target)
     % mO - coordinate (usually size 3)
     % nO - time step, equal to iterations in simulation
     % pO - obstacle number
-    [mO,nO,pO] = size(obst)
+    [mO,nO,pO] = size(obst);
     
     
     ObstDist = zeros(pA,pO);
@@ -40,6 +40,31 @@ function PlotSimDistance(agentPos, obst, threshold, target)
         plot(0:1:(pA-1),transpose(ObstDist(:,i)));
         plot(0:1:(pA-1),threshold*ones(1,(pA)));
     end
+    
+    title('Minimum distance between vehicle polytope and obstacle polytope');
+    xlabel('time');
+    ylabel('distance');
+    
+    figure()
+    hold on;
+    dist = zeros(pA,1);
+    
+    for i = 1:pA
+        for j = 1:nA
+
+            dist(i) = dist(i) + norm(agentPos(:,j,i)-target)^2;
+
+        end
+        
+    end
+    
+    plot(0:1:(pA-1),dist);
+    title('Minimum distance between vehicle polytope and target polytope');
+    xlabel('time');
+    ylabel('distance');
+    
+
+    
     
     
     
