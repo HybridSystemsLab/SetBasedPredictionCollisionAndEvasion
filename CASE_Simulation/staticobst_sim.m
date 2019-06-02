@@ -87,7 +87,7 @@ agentPos = zeros(5,iterations+1,m);
 obstPos = zeros(5,iterations+1);
 u = zeros(2,iterations*M);
 
-
+runTime = zeros(m,iterations);
 for j = 1:m
     
     % box
@@ -106,8 +106,9 @@ for j = 1:m
         fprintf('Simulation iteration %d%% complete\n',ceil((i/iterations)*100));
 
         % find next optimal input
+        tic;
         uopt = FindOptimalInput(x0, N, ts, target, xObst, threshold, L, speed, steer, terminalWeight, uGuess,EXP);
-
+        runTime(j,i) = toc;
         % find next position of agent given the optimal input
         nextState = Dubin(x0,uopt,ts,L);
         
@@ -139,6 +140,11 @@ PlotSimDistance_SO(agentPos, obstPos, threshold, target);
 PlotSetBasedSim_SO(agentPos, obstPos, threshold, target, predictions);
 
 
+
+fprintf('Min runtime: %0.4f\n', min(runTime, [], 'all'));
+fprintf('Max runtime: %0.4f\n', max(runTime, [], 'all'));
+fprintf('Average runtime: %0.4f\n',mean(mean(runTime)));
+fprintf('Runtime standard dev: %0.4f\n',std2(runTime));
 
 
 

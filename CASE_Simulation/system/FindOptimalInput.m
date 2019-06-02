@@ -28,7 +28,7 @@ function uopt = FindOptimalInput(x0_set, N, ts, target, xObst, threshold, L, spe
     
     
     [uopt ,fval,exitflag,output] = fmincon(@(u) Cost(x0_set,u,ts,target,L,terminalWeight),uGuess,A,b,Aeq,beq,lb,ub, @(u) ObstConstraint(x0_set,u,ts,xObst,threshold,L,polyOptions,EXP),options);
-    output
+    %output;
     
     % return optimal input sequence
     
